@@ -1,5 +1,5 @@
 
-# Checks:
+# Checks!:
 # 1. Sum of each column/row is 45
 # 2. All integers in the column/row is unique
 # 3. #1 and #2 for regions as well
