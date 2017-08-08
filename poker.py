@@ -72,25 +72,79 @@
 # {A-Clubs}{K-Hearts}{J-Diamonds}{10-Spades}{8-Hearts}. The highest-ranked of the five cards determines its value, so
 # an "ace-high" hand (such as this example) would beat a "king-high" hand, and so forth.
 
+# groups = []
+# uniquekeys = []
+# data = sorted(data, key=keyfunc)
+# for k, g in groupby(data, keyfunc):
+#     groups.append(list(g))      # Store group iterator as a list
+#     uniquekeys.append(k)
+
+from operator import itemgetter
+from itertools import groupby
 
 class PokerHand(object):
     RESULT = ["Loss", "Tie", "Win"]
 
     def __init__(self, hand):
         self.hand = hand
+        self.straight = False
+        self.two_pair = False
+        self.three_pair = False
+        self.four_pair = False
+        self.result = None
+        self.high_card = None
 
     def evaluate(self):
         result = {'HC': 1,'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
-        royals = {'K': 12, 'J': 10, 'Q': 11, 'A': 13}
+        royals = {'K': 13, 'J': 11, 'Q': 12, 'A': 14}
         hand = self.hand.split()
-        values = [int(x[0]) for x in hand if x[0].isdigit()]
-        suits = [x[1] for x in hand]
-        print (suits)
-        for value in self.hand:
-            if value[0] in royals:
-                values.append(royals[value])
-        if
-        print (values)
+        # values = [int(x[0]) for x in hand if x[0].isdigit()]
+        values = []
+        for card in hand:
+            print (card)
+            if len(card) == 2 and card[0].isdigit():
+                values.append(int(card[0]))
+            elif len(card) == 2:
+                if card[0] in royals:
+                    values.append(royals[card[0]])
+            elif len(card) == 3:
+                values.append(10)
+        print ('asdf',values)
+        suits = [x[-1] for x in hand]
+        # print (suits)
+        # for value in self.hand:
+        #     if value[0] in royals:
+        #         values.append(royals[value])
+        values.sort()
+        print(values)
+        prev = values[0]
+        i = 0
+        for val in values[1:]:
+            if prev+1 == val:
+                prev = val
+                i += 1
+        if prev == values[-1] and i == 4:
+            self.straight = True
+        for val in values:
+            if values.count(val) == 2:
+                self.two_pair = True
+            elif values.count(val) == 3:
+                self.two_pair = True
+                self.three_pair = True
+            elif values.count(val) == 4:
+                self.two_pair = True
+                self.three_pair = True
+                self.four_pair = True
+
+
+        print ('tp',self.two_pair)
+        print ('3',self.three_pair)
+        print ('4',self.four_pair)
+        print ('straight',self.straight)
+
+
+
+
 
 
     def compare_with(self, other):
@@ -98,5 +152,5 @@ class PokerHand(object):
 
 
 
-a = PokerHand('2C 3H 4D 5S QH')
+a = PokerHand('5C 7H 9D 8S 6H')
 print (a.evaluate())
