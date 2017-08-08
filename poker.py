@@ -119,6 +119,17 @@ class PokerHand(object):
         print(values)
         prev = values[0]
         i = 0
+        highest = 0
+        for card in hand:
+            if len(card) == 3:
+                highest = 10
+            elif card[0] in royals:
+                val = royals[card[0]]
+                if int(val) > highest:
+                    highest = val
+            elif int(card[0]) > highest:
+                highest = int(card[0])
+        self.high_card = highest
         for val in values[1:]:
             if prev+1 == val:
                 prev = val
@@ -141,6 +152,7 @@ class PokerHand(object):
         print ('3',self.three_pair)
         print ('4',self.four_pair)
         print ('straight',self.straight)
+        print ('high',self.high_card)
 
 
 
@@ -152,5 +164,5 @@ class PokerHand(object):
 
 
 
-a = PokerHand('5C 7H 9D 8S 6H')
+a = PokerHand('5C 7H 9D 8S QH')
 print (a.evaluate())
