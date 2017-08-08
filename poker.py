@@ -80,6 +80,7 @@ class PokerHand(object):
         self.hand = hand
 
     def evaluate(self):
+        result = {'HC': 1,'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
         royals = {'K': 12, 'J': 10, 'Q': 11, 'A': 13}
         hand = self.hand.split()
         values = [int(x[0]) for x in hand if x[0].isdigit()]
@@ -88,6 +89,7 @@ class PokerHand(object):
         for value in self.hand:
             if value[0] in royals:
                 values.append(royals[value])
+        if
         print (values)
 
 
