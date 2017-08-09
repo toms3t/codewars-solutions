@@ -72,12 +72,6 @@
 # {A-Clubs}{K-Hearts}{J-Diamonds}{10-Spades}{8-Hearts}. The highest-ranked of the five cards determines its value, so
 # an "ace-high" hand (such as this example) would beat a "king-high" hand, and so forth.
 
-# groups = []
-# uniquekeys = []
-# data = sorted(data, key=keyfunc)
-# for k, g in groupby(data, keyfunc):
-#     groups.append(list(g))      # Store group iterator as a list
-#     uniquekeys.append(k)
 
 from operator import itemgetter
 from itertools import groupby
@@ -88,17 +82,21 @@ class PokerHand(object):
     def __init__(self, hand):
         self.hand = hand
         self.straight = False
+        self.one_pair = False
         self.two_pair = False
-        self.three_pair = False
-        self.four_pair = False
-        self.result = None
+        self.three = False
+        self.four = False
+        self.score = 1
         self.high_card = None
+        self.flush = False
+        self.full_house = False
+        self.straight_flush = False
+        self.royal_flush = False
 
     def evaluate(self):
         result = {'HC': 1,'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
         royals = {'K': 13, 'J': 11, 'Q': 12, 'A': 14}
         hand = self.hand.split()
-        # values = [int(x[0]) for x in hand if x[0].isdigit()]
         values = []
         for card in hand:
             print (card)
@@ -129,7 +127,7 @@ class PokerHand(object):
                     highest = val
             elif int(card[0]) > highest:
                 highest = int(card[0])
-        self.high_card = highest
+        self.high_card = str(highest)+card[-1]
         for val in values[1:]:
             if prev+1 == val:
                 prev = val
@@ -138,21 +136,49 @@ class PokerHand(object):
             self.straight = True
         for val in values:
             if values.count(val) == 2:
-                self.two_pair = True
+                self.one_pair = True
+                self.score = 2
             elif values.count(val) == 3:
-                self.two_pair = True
-                self.three_pair = True
+                self.one_pair = True
+                self.three = True
+                self.score = 3
             elif values.count(val) == 4:
-                self.two_pair = True
-                self.three_pair = True
-                self.four_pair = True
+                self.one_pair = True
+                self.three = True
+                self.four = True
+        if values.count(values[0]) == 3:
+            if values.count(values[-1]) == 2:
+                self.full_house = True
+        elif values.count(values[0]) == 2:
+            if values.count(values[-1]) == 3:
+                self.full_house = True
+
+        if self.hand.count('C') == 5:
+            self.flush = True
+        elif self.hand.count('D') == 5:
+            self.flush = True
+        elif self.hand.count('H') == 5:
+            self.flush = True
+        elif self.hand.count('S') == 5:
+            self.flush = True
+
+        if self.straight == True and self.flush == True:
+            self.straight_flush = True
+            if sum(values) == 60:
+                self.royal_flush = True
 
 
-        print ('tp',self.two_pair)
-        print ('3',self.three_pair)
-        print ('4',self.four_pair)
+
+
+        print ('tp',self.one_pair)
+        print ('3',self.three)
+        print ('4',self.four)
         print ('straight',self.straight)
         print ('high',self.high_card)
+        print ('flush', self.flush)
+        print ('fullhouse',self.full_house)
+        print ('straightflush', self.straight_flush)
+        print ('royal', self.royal_flush)
 
 
 
@@ -164,5 +190,5 @@ class PokerHand(object):
 
 
 
-a = PokerHand('5C 7H 9D 8S QH')
+a = PokerHand('10C JC QC KC AC')
 print (a.evaluate())
