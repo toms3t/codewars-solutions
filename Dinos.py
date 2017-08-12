@@ -33,17 +33,38 @@ class Dino():
         return dinos
 
     @classmethod
-    def constructor(cls):
+    def constructor(cls,k,v):
         dinospeed = {}
-        for k,v in Dino.pull_data().items():
-            k = Dino(k,v[0],v[1],v[2],v[3])
-            k.speed = Dino.speed_calc(k)
-            if k.stance == 'bipedal':
-                dinospeed[k.name] = k.speed
-        for k,v in sorted(dinospeed.items(),key=lambda x:x[1],reverse=True):
-            print (k)
+        name = k
+        leg_length = v[0]
+        diet = v[1]
+        stride_length = v[2]
+        stance = v[3]
+        # v[0] =
+        return cls(name,leg_length,diet,stride_length,stance)
 
-print (Dino.constructor())
+    # @classmethod
+    # def constructor(cls):
+    #     dinospeed = {}
+    #     for k,v in Dino.pull_data().items():
+    #         k = Dino(k,v[0],v[1],v[2],v[3])
+    #         k.speed = Dino.speed_calc(k)
+    #         if k.stance == 'bipedal':
+    #             dinospeed[k.name] = k.speed
+    #     for k,v in sorted(dinospeed.items(),key=lambda x:x[1],reverse=True):
+    #         print (k)
+
+dinos = Dino.pull_data()
+
+for k,v in dinos.items():
+    dinospeed = {}
+    dino = Dino.constructor(k,v)
+    # print (dino.name,dino.stance)
+    dino.speed = Dino.speed_calc(dino)
+    if dino.stance == 'bipedal':
+        dinospeed[dino.name] = dino.speed
+    for k, v in sorted(dinospeed.items(), key=lambda x: x[1], reverse=True):
+        print (k)
     # Hadrosaurus
     # Struthiomimus
     # Velociraptor

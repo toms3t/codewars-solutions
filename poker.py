@@ -73,9 +73,6 @@
 # an "ace-high" hand (such as this example) would beat a "king-high" hand, and so forth.
 
 
-from operator import itemgetter
-from itertools import groupby
-
 class PokerHand(object):
     RESULT = ["Loss", "Tie", "Win"]
 
@@ -94,42 +91,49 @@ class PokerHand(object):
         self.royal_flush = False
 
     def evaluate(self):
-        result = {'HC': 1,'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
-        royals = {'K': 13, 'J': 11, 'Q': 12, 'A': 14}
+        score = {'HC': 1, 'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
+        cardvaluemap = {
+            '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+        }
+        cardvaluemaprev = {val: key for key, val in cardvaluemap.items()}
+        print (cardvaluemaprev)
         hand = self.hand.split()
         values = []
         for card in hand:
-            print (card)
+            print(card)
             if len(card) == 2 and card[0].isdigit():
                 values.append(int(card[0]))
             elif len(card) == 2:
-                if card[0] in royals:
-                    values.append(royals[card[0]])
+                if card[0] in cardvaluemap:
+                    values.append(cardvaluemap[card[0]])
             elif len(card) == 3:
                 values.append(10)
-        print ('asdf',values)
+        print('asdf', values)
+        if len(set(values)) == 3:
+            self.two_pair = True
         suits = [x[-1] for x in hand]
         # print (suits)
         # for value in self.hand:
-        #     if value[0] in royals:
-        #         values.append(royals[value])
+        #     if value[0] in cardvaluemap:
+        #         values.append(cardvaluemap[value])
         values.sort()
         print(values)
         prev = values[0]
         i = 0
         highest = 0
+        highsuit = ''
         for card in hand:
             if len(card) == 3:
-                highest = 10
-            elif card[0] in royals:
-                val = royals[card[0]]
-                if int(val) > highest:
+                val = 10
+                if val > highest:
                     highest = val
-            elif int(card[0]) > highest:
-                highest = int(card[0])
-        self.high_card = str(highest)+card[-1]
+                    highsuit = card[-1]
+            elif cardvaluemap[card[0]] > highest:
+                highest = cardvaluemap[card[0]]
+                highsuit = card[-1]
+        self.high_card = str(cardvaluemaprev[highest]) + highsuit
         for val in values[1:]:
-            if prev+1 == val:
+            if prev + 1 == val:
                 prev = val
                 i += 1
         if prev == values[-1] and i == 4:
@@ -144,6 +148,7 @@ class PokerHand(object):
                 self.score = 3
             elif values.count(val) == 4:
                 self.one_pair = True
+                self.two_pair = True
                 self.three = True
                 self.four = True
         if values.count(values[0]) == 3:
@@ -167,28 +172,20 @@ class PokerHand(object):
             if sum(values) == 60:
                 self.royal_flush = True
 
-
-
-
-        print ('tp',self.one_pair)
-        print ('3',self.three)
-        print ('4',self.four)
-        print ('straight',self.straight)
-        print ('high',self.high_card)
-        print ('flush', self.flush)
-        print ('fullhouse',self.full_house)
-        print ('straightflush', self.straight_flush)
-        print ('royal', self.royal_flush)
-
-
-
-
-
+        print('1p', self.one_pair)
+        print('3', self.three)
+        print('2p', self.two_pair)
+        print('4', self.four)
+        print('straight', self.straight)
+        print('high', self.high_card)
+        print('flush', self.flush)
+        print('fullhouse', self.full_house)
+        print('straightflush', self.straight_flush)
+        print('royal', self.royal_flush)
 
     def compare_with(self, other):
         pass
 
 
-
-a = PokerHand('10C JC QC KC AC')
-print (a.evaluate())
+a = PokerHand('2H 3H 5H 4H 6H')
+print(a.evaluate())
