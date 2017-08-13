@@ -77,30 +77,32 @@ class PokerHand(object):
     RESULT = ["Loss", "Tie", "Win"]
 
     def __init__(self, hand):
-        self.hand = hand
+        self.hand = hand.split()
         self.straight = False
         self.one_pair = False
         self.two_pair = False
         self.three = False
         self.four = False
-        self.score = 1
+        self.result = 0
         self.high_card = None
         self.flush = False
         self.full_house = False
         self.straight_flush = False
         self.royal_flush = False
 
+    def __str__(self):
+        return self.hand
+
     def evaluate(self):
-        score = {'HC': 1, 'OP': 2, 'TP': 3, 'TK': 4, 'S': 5, 'F': 6, 'FH': 7, 'FK': 8, 'SF': 9, 'RF': 10}
         cardvaluemap = {
-            '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+            '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
         }
         cardvaluemaprev = {val: key for key, val in cardvaluemap.items()}
-        print (cardvaluemaprev)
-        hand = self.hand.split()
+        # print (cardvaluemaprev)
+        # hand = self.hand
         values = []
-        for card in hand:
-            print(card)
+        for card in self.hand:
+            # print(card)
             if len(card) == 2 and card[0].isdigit():
                 values.append(int(card[0]))
             elif len(card) == 2:
@@ -108,27 +110,20 @@ class PokerHand(object):
                     values.append(cardvaluemap[card[0]])
             elif len(card) == 3:
                 values.append(10)
-        print('asdf', values)
-        if len(set(values)) == 3:
-            self.two_pair = True
-        suits = [x[-1] for x in hand]
+        # print('asdf', values)
+        # suits = [x[-1] for x in hand]
         # print (suits)
         # for value in self.hand:
         #     if value[0] in cardvaluemap:
         #         values.append(cardvaluemap[value])
         values.sort()
-        print(values)
+        # print(values)
         prev = values[0]
         i = 0
         highest = 0
         highsuit = ''
-        for card in hand:
-            if len(card) == 3:
-                val = 10
-                if val > highest:
-                    highest = val
-                    highsuit = card[-1]
-            elif cardvaluemap[card[0]] > highest:
+        for card in self.hand:
+            if cardvaluemap[card[0]] > highest:
                 highest = cardvaluemap[card[0]]
                 highsuit = card[-1]
         self.high_card = str(cardvaluemaprev[highest]) + highsuit
@@ -141,30 +136,26 @@ class PokerHand(object):
         for val in values:
             if values.count(val) == 2:
                 self.one_pair = True
-                self.score = 2
             elif values.count(val) == 3:
-                self.one_pair = True
                 self.three = True
-                self.score = 3
             elif values.count(val) == 4:
-                self.one_pair = True
-                self.two_pair = True
-                self.three = True
                 self.four = True
+        if len(set(values)) == 3:
+            self.two_pair = True
         if values.count(values[0]) == 3:
             if values.count(values[-1]) == 2:
                 self.full_house = True
         elif values.count(values[0]) == 2:
             if values.count(values[-1]) == 3:
                 self.full_house = True
-
-        if self.hand.count('C') == 5:
+        concat = ''.join(self.hand)
+        if concat.count('C') == 5:
             self.flush = True
-        elif self.hand.count('D') == 5:
+        elif concat.count('D') == 5:
             self.flush = True
-        elif self.hand.count('H') == 5:
+        elif concat.count('H') == 5:
             self.flush = True
-        elif self.hand.count('S') == 5:
+        elif concat.count('S') == 5:
             self.flush = True
 
         if self.straight == True and self.flush == True:
@@ -172,20 +163,63 @@ class PokerHand(object):
             if sum(values) == 60:
                 self.royal_flush = True
 
-        print('1p', self.one_pair)
-        print('3', self.three)
-        print('2p', self.two_pair)
-        print('4', self.four)
-        print('straight', self.straight)
-        print('high', self.high_card)
-        print('flush', self.flush)
-        print('fullhouse', self.full_house)
-        print('straightflush', self.straight_flush)
-        print('royal', self.royal_flush)
+        if self.royal_flush:
+            self.result = 10
+            return 'RF', self.royal_flush, self.result
+        if self.straight_flush:
+            self.result = 9
+            return 'SF', self.straight_flush, self.result
+        if self.four:
+            self.result = 8
+            return 'FOUR', self.four, self.result
+        if self.full_house:
+            self.result = 7
+            return 'FH', self.full_house, self.result
+        if self.flush:
+            self.result = 6
+            return 'F', self.flush, self.result
+        if self.straight:
+            self.result = 5
+            return 'S', self.straight, self.result
+        if self.three:
+            self.result = 4
+            return 'THREE', self.three, self.result
+        if self.two_pair:
+            self.result = 3
+            return 'TP', self.two_pair, self.result
+        if self.one_pair:
+            self.result = 2
+            return 'OP', self.one_pair, self.result
+        if self.high_card:
+            self.result = 1
+            return 'HC', self.high_card, self.result
 
-    def compare_with(self, other):
-        pass
+            # print('1p', self.one_pair)
+            # print('3', self.three)
+            # print('2p', self.two_pair)
+            # print('4', self.four)
+            # print('straight', self.straight)
+            # print('high', self.high_card)
+            # print('flush', self.flush)
+            # print('fullhouse', self.full_house)
+            # print('straightflush', self.straight_flush)
+            # print('royal', self.royal_flush)
+            # print (self.result)
+
+    def compare_with(self, other_hand):
+        other_hand = PokerHand(other_hand)
+        other_result = other_hand.evaluate()
+        print('b', other_result)
+        if self.result > other_hand.result:
+            return "Win"
+        if self.result < other_hand.result:
+            return 'Loss'
+        return 'Tie'
 
 
-a = PokerHand('2H 3H 5H 4H 6H')
+a = PokerHand('QH QS TH TD TS')
 print(a.evaluate())
+print(a.compare_with('QH QS TH TD TS'))
+
+# b = PokerHand('3H QS 3H 3D TS')
+# print(b.evaluate())
