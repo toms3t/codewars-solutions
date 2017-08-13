@@ -209,17 +209,16 @@ class PokerHand(object):
     def compare_with(self, other_hand):
         other_hand = PokerHand(other_hand)
         other_result = other_hand.evaluate()
-        print('b', other_result)
+        # print('b', other_result)
         if self.result > other_hand.result:
             return "Win"
         if self.result < other_hand.result:
             return 'Loss'
         return 'Tie'
 
-
-a = PokerHand('QH QS TH TD TS')
-print(a.evaluate())
-print(a.compare_with('QH QS TH TD TS'))
+# a = PokerHand('QH QS TH TD TS')
+# print(a.evaluate())
+# print(a.compare_with('QH QS TH TD TS'))
 
 # b = PokerHand('3H QS 3H 3D TS')
 # print(b.evaluate())
