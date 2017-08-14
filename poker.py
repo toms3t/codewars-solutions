@@ -98,8 +98,6 @@ class PokerHand(object):
             '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
         }
         cardvaluemaprev = {val: key for key, val in cardvaluemap.items()}
-        # print (cardvaluemaprev)
-        # hand = self.hand
         values = []
         for card in self.hand:
             # print(card)
@@ -110,14 +108,7 @@ class PokerHand(object):
                     values.append(cardvaluemap[card[0]])
             elif len(card) == 3:
                 values.append(10)
-        # print('asdf', values)
-        # suits = [x[-1] for x in hand]
-        # print (suits)
-        # for value in self.hand:
-        #     if value[0] in cardvaluemap:
-        #         values.append(cardvaluemap[value])
         values.sort()
-        # print(values)
         prev = values[0]
         i = 0
         highest = 0
@@ -194,18 +185,6 @@ class PokerHand(object):
             self.result = 1
             return 'HC', self.high_card, self.result
 
-            # print('1p', self.one_pair)
-            # print('3', self.three)
-            # print('2p', self.two_pair)
-            # print('4', self.four)
-            # print('straight', self.straight)
-            # print('high', self.high_card)
-            # print('flush', self.flush)
-            # print('fullhouse', self.full_house)
-            # print('straightflush', self.straight_flush)
-            # print('royal', self.royal_flush)
-            # print (self.result)
-
     def compare_with(self, other_hand):
         other_hand = PokerHand(other_hand)
         other_result = other_hand.evaluate()
@@ -216,9 +195,9 @@ class PokerHand(object):
             return 'Loss'
         return 'Tie'
 
-# a = PokerHand('QH QS TH TD TS')
-# print(a.evaluate())
-# print(a.compare_with('QH QS TH TD TS'))
+a = PokerHand('QH QS TH TD TS')
+print(a.evaluate())
+print(a.compare_with('AH QS TH TD TS'))
 
-# b = PokerHand('3H QS 3H 3D TS')
+# b = PokerHand('3H QS 3H TD TS')
 # print(b.evaluate())
