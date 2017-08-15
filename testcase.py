@@ -36,22 +36,22 @@ class TestStringMethods(unittest.TestCase):
         aval = a.evaluate()
         self.assertEqual(a.compare_with('QH QS 9H 9D TS'), 'Win')
 
-    def test_compare(self):
+    def test_compare2(self):
         a = poker.PokerHand('2H 4S 6C 8D TS')
         aval = a.evaluate()
         self.assertEqual(a.compare_with('QH QS 9H 9D TS'), 'Loss')
 
-    def test_compare2(self):
+    def test_compare3(self):
         a = poker.PokerHand('AH AS AC AD TS')
         aval = a.evaluate()
         self.assertEqual(a.compare_with('AH AS AD AC TS'), 'Tie')
 
-    def test_compare3(self):
+    def test_compare4(self):
         a = poker.PokerHand('8H 8S 8C 3D 3S')
         aval = a.evaluate()
         self.assertEqual(a.compare_with('TH JS QH KD AS'), 'Win')
 
-    def test_compare4(self):
+    def test_compare5(self):
         a = poker.PokerHand('AH AS AC 8D TS')
         aval = a.evaluate()
         self.assertEqual(a.compare_with('QH QS QC QD TS'), 'Loss')
