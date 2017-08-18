@@ -90,7 +90,8 @@ class PokerHand(object):
         self.one_pair = False
         self.one_pair_val = 0
         self.two_pair = False
-        self.two_pair_val = 0
+        self.two_pair_higher = 0
+        self.two_pair_lower = 0
         self.three = False
         self.three_val = 0
         self.four = False
@@ -117,14 +118,6 @@ class PokerHand(object):
         return self.values
 
     def evaluate(self):
-        # cardmap = {
-        #     '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
-        # }
-        # cardvaluemaprev = {val: key for key, val in cardmap.items()}
-        # for card in self.hand:
-        #     if card[0] in cardvaluemap:
-        #             self.values.append(cardvaluemap[card[0]])
-        # self.values.sort()
         self.values = self.get_card_values()
         prev = self.values[0]
         i = 0
@@ -146,18 +139,21 @@ class PokerHand(object):
         for val in self.values:
             if self.values.count(val) == 2:
                 self.one_pair = True
-                self.score = self.tiebreaker(val)
+                self.score = val
+                # self.score = self.tiebreaker(val)
             elif self.values.count(val) == 3:
                 self.three = True
-                self.score = self.tiebreaker(val)
-
+                self.score = val
             elif self.values.count(val) == 4:
+                self.one_pair = False
+                self.three = False
                 self.four = True
-                self.score = self.tiebreaker(val)
+                self.score = val
         if self.values.count(self.values[1]) == 2 and self.values.count(self.values[3]) == 2:
             self.two_pair = True
-            val = 0
-            self.score = self.tiebreaker(val)
+            self.two_pair_higher = max(self.values[1], self.values[3])
+            self.two_pair_lower = min(self.values[1], self.values[3])
+            self.score = self.two_pair_higher
         if self.values.count(self.values[0]) == 3:
             if self.values.count(self.values[-1]) == 2:
                 self.full_house = True
@@ -220,18 +216,52 @@ class PokerHand(object):
             self.result = 1
             return 'HC', self.high_card, self.result
 
-    def tiebreaker(self, val):
-        for value in self.values[::-1]:
-            if value != val:
-                score = value
-                break
+    def tiebreaker(self, other_hand):
+        if self.one_pair:
+            highest = 0
+            for val in self.values[::-1]:
+                if val != self.score:
+                    highest = val
         if self.two_pair:
-            for val in self.values:
-                if self.values.count(val) == 1:
-                    single = val
-            score = single
-            return score
-        return score
+            if self.two_pair_lower > other_hand.two_pair_lower:
+                return 'Win'
+            elif self.two_pair_lower < other_hand.two_pair_lower:
+                return 'Loss'
+            else:
+                for val in self.values[::-1]:
+                    if val != self.two_pair_higher and val != self.two_pair_lower:
+                        self.score = val
+                        break
+                for val in other_hand.values[::-1]:
+                    if val != other_hand.two_pair_higher and val != other_hand.two_pair_lower:
+                        other_hand.score = val
+                        break
+        if self.score == other_hand.score:
+            for val in self.values[::-1]:
+                if val != self.score:
+                    self.score = val
+                    break
+            for val in other_hand.values[::-1]:
+                if val != other_hand.score:
+                    other_hand.score = val
+                    break
+        if self.score > other_hand.score:
+            return "Win"
+        elif self.score < other_hand.score:
+            return "Loss"
+        return "Tie"
+
+    def get_result(self):
+        if self.result > other_hand.result:
+            print(self.result)
+            print(other_hand.result)
+            return "Win"
+        if self.result < other_hand.result:
+            print(self.result)
+            print(other_hand.result)
+            return 'Loss'
+        return 'Tie'
+
 
     def compare_with(self, other_hand):
         other_hand = PokerHand(other_hand)
@@ -258,21 +288,26 @@ class PokerHand(object):
             print(self.result)
             print(other_hand.result)
             return 'Loss'
+
         # Tiebreakers
         if self.result == other_hand.result:
-            print(self.score)
-            print(other_hand.score)
-
             if self.score > other_hand.score:
                 return 'Win'
             elif self.score < other_hand.score:
                 return 'Loss'
-            return 'Tie'
+            else:
+                if self.one_pair:
+                    return self.tiebreaker(other_hand)
+                if self.two_pair:
+                    return self.tiebreaker(other_hand)
+
+            print('self', self.score)
+            print('other hand', other_hand.score)
 
 
-a = PokerHand('KH KS KC 4D 4S')
+a = PokerHand('AH AS KC JD 9S')
 print(a.evaluate())
-print(a.compare_with('AH AS AC AD 5S'))
+print(a.compare_with('AH AS 4C 2D KS'))
 
 # b = PokerHand('3H QS 3H TD TS')
 # print(b.evaluate())
