@@ -121,7 +121,6 @@ class PokerHand(object):
     def evaluate(self):
         self.values = self.get_card_values()
         self.single_values = sorted([x for x in self.values if self.values.count(x) == 1])
-        print(self.single_values)
         prev = self.values[0]
         i = 0
         highest = 0
@@ -272,12 +271,8 @@ class PokerHand(object):
 
     def get_result(self):
         if self.result > other_hand.result:
-            print(self.result)
-            print(other_hand.result)
             return "Win"
         if self.result < other_hand.result:
-            print(self.result)
-            print(other_hand.result)
             return 'Loss'
         return 'Tie'
 
@@ -307,12 +302,8 @@ class PokerHand(object):
                     #         if other_hand.values.count(val) == 2:
                     #             other_hand.score = val
         if self.result > other_hand.result:
-            print(self.result)
-            print(other_hand.result)
             return "Win"
         if self.result < other_hand.result:
-            print(self.result)
-            print(other_hand.result)
             return 'Loss'
 
         # Tiebreakers
@@ -331,11 +322,8 @@ class PokerHand(object):
                 if self.flush:
                     return self.tiebreaker(other_hand)
 
-            print('self', self.score)
-            print('other hand', other_hand.score)
 
-
-a = PokerHand('AS KS QS JS TS')
+a = PokerHand('2S 4S 6S 8H TS')
 print(a.evaluate())
 print(a.compare_with('AD KD QD JD TD'))
 
