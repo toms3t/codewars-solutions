@@ -1,3 +1,5 @@
+from collections import Counter
+
 class PokerHand(object):
 
     CARDMAP = {
@@ -10,6 +12,7 @@ class PokerHand(object):
     def __init__(self, hand):
         self.hand = hand.split()
         self.straight = False
+        self.low_straight = False
         self.one_pair = False
         self.two_pair = False
         self.two_pair_higher = 0
@@ -44,22 +47,24 @@ class PokerHand(object):
         :return: Does not return a value, only sets a object attribute to True if a hand (i.e. Two Pair) is identified
         '''
 
-        i = 0
-        highest = 0
-        high_suit = ''
+        # Converting cards to values
         self.values = self.get_card_values()
         self.single_values = sorted([x for x in self.values if self.values.count(x) == 1])
-        prev = self.values[0]
 
         # Identifying High Card
+        highest = 0
+        high_suit = ''
         for card in self.hand:
             if PokerHand.CARDMAP[card[0]] > highest:
                 highest = PokerHand.CARDMAP[card[0]]
                 high_suit = card[-1]
         self.high_card = str(PokerHand.CARDMAP_REVERSED[highest]) + high_suit
-
-        # Identifying a Straight
         self.score = self.values[-1]
+
+        # Identifying a Straight or low straight (where Ace is used as a 1)
+        i = 0
+        low_straight = ['A', '2', '3', '4', '5']
+        prev = self.values[0]
         for val in self.values[1:]:
             if prev + 1 == val:
                 prev = val
@@ -67,13 +72,16 @@ class PokerHand(object):
         if prev == self.values[-1] and i == 4:
             self.straight = True
             self.score = self.values[-1]
+        elif all(i in ''.join(self.hand) for i in low_straight):
+            self.straight = True
+            self.low_straight = True
+            self.score = 5
 
         # Identifying matched cards (one-pair / two-pair / three-of-a-kind / four-of-a-kind)
         for val in self.values:
             if self.values.count(val) == 2:
                 self.one_pair = True
                 self.score = val
-                # self.score = self.tiebreaker(val)
             elif self.values.count(val) == 3:
                 self.three = True
                 self.score = val
@@ -95,24 +103,18 @@ class PokerHand(object):
                 self.full_house = True
 
         # Identifying a Flush
-        concat = ''.join(self.hand)
-        if concat.count('C') == 5:
-            self.flush = True
-            self.score = self.values[-1]
-        elif concat.count('D') == 5:
-            self.flush = True
-            self.score = self.values[-1]
-        elif concat.count('H') == 5:
-            self.flush = True
-            self.score = self.values[-1]
-        elif concat.count('S') == 5:
+        chand = Counter(''.join(self.hand))
+        if chand['H'] == 5 or chand['D'] == 5 or chand['S'] == 5 or chand['C'] == 5:
             self.flush = True
             self.score = self.values[-1]
 
         # Identifying a Straight Flush or Royal Flush
         if self.straight == True and self.flush == True:
             self.straight_flush = True
-            self.score = self.values[-1]
+            if self.low_straight:
+                self.score = 5
+            else:
+                self.score = self.values[-1]
             if sum(self.values) == 60:
                 self.royal_flush = True
                 self.score = 100
@@ -262,6 +264,3 @@ class PokerHand(object):
                     return self.tiebreaker(other_hand)
                 if self.flush:
                     return self.tiebreaker(other_hand)
-
-# a = PokerHand('5H 5S 5C AD TS')
-# print(a.compare_with('QH QS QH 9D TS'))

@@ -128,5 +128,33 @@ class TestStringMethods(unittest.TestCase):
         hand = poker.PokerHand('2H 4D 6C 8D TS')
         self.assertEqual(hand.compare_with('2S 4C 6S 8H TD'), 'Tie')
 
+    def test_ace_as_one(self):
+        '''
+        Testing ace used as a 1 in a straight
+        '''
+        hand = poker.PokerHand('AH 2D 3C 4D 5S')
+        self.assertEqual(hand.compare_with('2S 2C 6S 6H TD'), 'Win')
+
+    def test_ace_as_one_straight_flush(self):
+        '''
+        Testing ace used as a 1 in a straight flush
+        '''
+        hand = poker.PokerHand('AH 2H 3H 4H 5H')
+        self.assertEqual(hand.compare_with('2S 2C 6S 6H TD'), 'Win')
+
+    def test_ace_as_one_straight_flush_loses(self):
+        '''
+        Testing ace used as a 1 in a straight flush
+        '''
+        hand = poker.PokerHand('AH 2H 3H 4H 5H')
+        self.assertEqual(hand.compare_with('2S 3S 4S 5S 6S'), 'Loss')
+
+    def test_ace_as_one_straight_loses(self):
+        '''
+        Testing ace used as a 1 in a straight flush
+        '''
+        hand = poker.PokerHand('AD 2C 3H 4C 5H')
+        self.assertEqual(hand.compare_with('2C 3H 4S 5S 6S'), 'Loss')
+
 if __name__ == '__main__':
     unittest.main()
