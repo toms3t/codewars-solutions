@@ -26,6 +26,7 @@ class PokerHand(object):
         self.straight_flush = False
         self.royal_flush = False
         self.score = 0
+        self.tiebreak_score = 0
         self.values = []
         self.single_values = []
 
@@ -101,6 +102,12 @@ class PokerHand(object):
         elif self.values.count(self.values[0]) == 2:
             if self.values.count(self.values[-1]) == 3:
                 self.full_house = True
+        if self.full_house:
+            for val in self.values:
+                if self.values.count(val) == 3:
+                    self.score = val
+                if self.values.count(val) == 2:
+                    self.tiebreak_score = val
 
         # Identifying a Flush
         chand = Counter(''.join(self.hand))
@@ -155,14 +162,21 @@ class PokerHand(object):
             self.result = 1
             return self.result
 
-    def tiebreaker(self, other_hand):
+    def tiebreaker(self, other):
         '''
         This function determines the winning hand (breaks tie) if both hands are deemed the same (i.e. both one pair).
-        :param other_hand: Separate object of type PokerHand class to compare with Self
+        :param other: Separate object of type PokerHand class to compare with Self
         :return: String('Win','Loss','Tie') is returned when a tiebreaker is needed (both hands have same result)
         '''
+        if self.full_house:
+            if self.tiebreak_score > other.tiebreak_score:
+                return 'Win'
+            elif self.tiebreak_score < other.tiebreak_score:
+                return 'Loss'
+            else:
+                return 'Tie'
         if self.one_pair:
-            kicker = self.find_highest_kicker(other_hand)
+            kicker = self.find_highest_kicker(other)
             if 'self' in kicker:
                 return 'Win'
             elif 'other' in kicker:
@@ -170,97 +184,97 @@ class PokerHand(object):
             else:
                 return 'Tie'
         if self.two_pair:
-            if self.two_pair_lower > other_hand.two_pair_lower:
+            if self.two_pair_lower > other.two_pair_lower:
                 return 'Win'
-            elif self.two_pair_lower < other_hand.two_pair_lower:
+            elif self.two_pair_lower < other.two_pair_lower:
                 return 'Loss'
             else:
-                kicker = self.find_highest_kicker(other_hand)
+                kicker = self.find_highest_kicker(other)
                 if 'self' in kicker:
                     return 'Win'
                 elif 'other' in kicker:
                     return 'Loss'
         if self.flush:
-            kicker = self.find_highest_kicker(other_hand)
+            kicker = self.find_highest_kicker(other)
             if 'self' in kicker:
                 return 'Win'
             elif 'other' in kicker:
                 return 'Loss'
             else:
                 return 'Tie'
-        if self.score == other_hand.score:
+        if self.score == other.score:
             for val in self.values[::-1]:
                 if val != self.score:
                     self.score = val
                     break
-            for val in other_hand.values[::-1]:
-                if val != other_hand.score:
-                    other_hand.score = val
+            for val in other.values[::-1]:
+                if val != other.score:
+                    other.score = val
                     break
         if self.high_card:
-            kicker = self.find_highest_kicker(other_hand)
+            kicker = self.find_highest_kicker(other)
             if 'self' in kicker:
                 return 'Win'
             elif 'other' in kicker:
                 return 'Loss'
             else:
                 return 'Tie'
-        if self.score > other_hand.score:
+        if self.score > other.score:
             return "Win"
-        elif self.score < other_hand.score:
+        elif self.score < other.score:
             return "Loss"
         return "Tie"
 
-    def find_highest_kicker(self, other_hand):
+    def find_highest_kicker(self, other):
         '''
         This function determines the card in the hand that is the highest
         kicker (card that is not part of the winning set of cards).
-        :param other_hand: Separate object of type PokerHand class to compare with Self
-        :return: Returns "self" or "other_hand" (whichever had highest kicker) and the value of the card
+        :param other: Separate object of type PokerHand class to compare with Self
+        :return: Returns "self" or "other" (whichever had highest kicker) and the value of the card
         '''
-        for x, y in list(zip(self.single_values, other_hand.single_values))[::-1]:
+        for x, y in list(zip(self.single_values, other.single_values))[::-1]:
             if x > y:
                 return 'self' + str(x)
             elif x < y:
-                return 'other_hand' + str(y)
+                return 'other' + str(y)
         return 'Tie'
 
-    def compare_with(self, other_hand):
+    def compare_with(self, other):
         '''
         This function compares one hand to another and returns "Win", "Loss", or "Tie" from the perspective of self
-        :param other_hand: Separate object of type PokerHand class to compare with Self
+        :param other: Separate object of type PokerHand class to compare with Self
         :return: String('Win', 'Loss', 'Tie')
         '''
         self.identify_hand()
-        other_hand = PokerHand(other_hand)
-        other_hand.identify_hand()
+        other.identify_hand()
         self.result = self.get_hand_value()
-        other_hand.result = other_hand.get_hand_value()
-        if self.full_house:
-            for val in self.values:
-                if self.values.count(val) == 3:
-                    self.score = val
-            for val in other_hand.values:
-                if other_hand.values.count(val) == 3:
-                    other_hand.score = val
-
-        if self.result > other_hand.result:
+        other.result = other.get_hand_value()
+        if self.result > other.result:
             return "Win"
-        if self.result < other_hand.result:
+        if self.result < other.result:
             return 'Loss'
 
-        # Tiebreakers
-        if self.result == other_hand.result:
-            if self.score > other_hand.score:
+        # Tiebreakers - higher score wins
+        if self.result == other.result:
+            if self.score > other.score:
                 return 'Win'
-            elif self.score < other_hand.score:
+            elif self.score < other.score:
                 return 'Loss'
             else:
+                if self.full_house:
+                    return self.tiebreaker(other)
                 if self.high_card:
-                    return self.tiebreaker(other_hand)
+                    return self.tiebreaker(other)
                 if self.one_pair:
-                    return self.tiebreaker(other_hand)
+                    return self.tiebreaker(other)
                 if self.two_pair:
-                    return self.tiebreaker(other_hand)
+                    return self.tiebreaker(other)
                 if self.flush:
-                    return self.tiebreaker(other_hand)
+                    return self.tiebreaker(other)
+
+# Usage:
+# hand = 'KH KC 3S 3H 3D'
+# other = '2H 2C 3S 3H 3D'
+# player, opponent = PokerHand(hand), PokerHand(other)
+#
+# print (player.compare_with(opponent))
