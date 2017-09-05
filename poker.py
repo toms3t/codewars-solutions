@@ -273,8 +273,8 @@ class PokerHand(object):
                     return self.tiebreaker(other)
 
 # Usage:
-# hand = 'KH KC 3S 3H 3D'
-# other = '2H 2C 3S 3H 3D'
-# player, opponent = PokerHand(hand), PokerHand(other)
-#
-# print (player.compare_with(opponent))
+hand = 'KH KC 3S 3H 3D'
+other = '2H 2C 3S 3H 3D'
+player, opponent = PokerHand(hand), PokerHand(other)
+
+print(player.compare_with(opponent))
