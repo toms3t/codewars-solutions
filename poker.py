@@ -29,6 +29,10 @@ class PokerHand(object):
         self.tiebreak_score = 0
         self.values = []
         self.single_values = []
+        self.best_hand = self.identify_hand()
+        self.result = self.get_hand_value()
+        self.kicker_values = self.values[::-1][1:]
+
 
     def get_card_values(self):
         '''
@@ -87,6 +91,7 @@ class PokerHand(object):
                 self.three = True
                 self.score = val
             elif self.values.count(val) == 4:
+                print('val', val)
                 self.four = True
                 self.score = val
         if self.values.count(self.values[1]) == 2 and self.values.count(self.values[3]) == 2:
@@ -125,6 +130,18 @@ class PokerHand(object):
             if sum(self.values) == 60:
                 self.royal_flush = True
                 self.score = 100
+
+        if self.royal_flush: return "Royal Flush"
+        if self.straight_flush: return 'Straight Flush'
+        if self.four: return '4 Of A Kind'
+        if self.full_house: return 'Full House'
+        if self.flush: return 'Flush'
+        if self.straight: return 'Straight'
+        if self.three: return '3 Of A Kind'
+        if self.two_pair: return 'Two Pair'
+        if self.one_pair: return 'One Pair'
+        if self.high_card: return 'High Card'
+
 
     def get_hand_value(self):
         '''
@@ -273,8 +290,16 @@ class PokerHand(object):
                     return self.tiebreaker(other)
 
 # Usage:
-hand = 'KH KC 3S 3H 3D'
-other = '2H 2C 3S 3H 3D'
-player, opponent = PokerHand(hand), PokerHand(other)
-
-print(player.compare_with(opponent))
+hand = '6D 6H 6S 5C 5D'
+player = PokerHand(hand)
+print(player.values)
+print(player.four)
+# print (player.identify_hand())
+print(player.values)
+print(player.four)
+print(player.full_house)
+# other = '2H 2C 3S 3H 3D'
+# player, opponent = PokerHand(hand), PokerHand(other)
+# print (player.hand)
+#
+# print(player.compare_with(opponent))
