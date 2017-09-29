@@ -172,23 +172,6 @@ class PokerHand(object):
             self.result = 1
             return self.result
 
-            # def find_highest_kicker(self, other):
-            #     '''
-            #     This function determines the card in the hand that is the highest
-            #     kicker (card that is not part of the winning set of cards).
-            #     :param other: Separate object of type PokerHand class to compare with Self
-            #     :return: Returns "self" or "other" (whichever had highest kicker) and the value of the card
-            #     '''
-            #     for x, y in list(zip(self.single_values, other.single_values))[::-1]:
-            #         if x > y:
-            #             return 'self' + str(x)
-            #         elif x < y:
-            #             return 'other' + str(y)
-            #     return 'Tie'
-
-
-# a = PokerHand('JH AH TH KH QH')
-# print (a.result)
 d = {}
 hands = [
     '4S 2C 9H 5D 7C',
@@ -208,25 +191,7 @@ hands = [
     'JC TD 5H TC JD'
 ]
 
-# for hand in hands:
-#     a = PokerHand(hand)
-#     d[hand] = (a.result,a.score)
-#
-# for k,v in d.items():
-#     print (k,v)
-
-
 SORTED_POKER_HANDS = list(map(PokerHand, hands))
 for hand in sorted(SORTED_POKER_HANDS):
     print(hand, (hand.result, hand.score, hand.kicker_values))
 
-# a = PokerHand('AH KS QC JD TS')
-# print (a.hand)
-# print ('score',a.score)
-# print (a.straight)
-# print (a.aggregate_score)
-
-# sorted_x = sorted(hands, key=operator.attrgetter('aggregate_score'))
-# print (sorted_x)
-
-# print (sorted(hands))
