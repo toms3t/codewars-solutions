@@ -22,8 +22,6 @@ def snail(arr):
             lside.append(y)
     newarr.append(lside)
     finalarr = [x for row in newarr for x in row]
-    print('array given', array)
-    print('my answer', finalarr)
     return finalarr
 
 print(snail(array))
